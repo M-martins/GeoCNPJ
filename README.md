@@ -49,8 +49,12 @@ O primeiro uso pode baixar pacotes e dados grandes. Antes de escolher um mês co
 
 A internet é usada para instalar pacotes Python, consultar/baixar dados da Receita, obter os complementos municipais e CNAE 2.3, obter insumos CNEFE quando necessário e carregar o MapLibre por `unpkg.com` e tiles de `tile.openstreetmap.org`. O navegador conversa com o servidor local; a aplicação não deve ser exposta em `0.0.0.0` ou publicada como servidor web. O mapa base e downloads não funcionam integralmente offline.
 
-## Arquivos e publicação
+## Seus arquivos
 
-Por padrão, downloads, cache, projetos e resultados ficam em `data/`; logs em `logs/`. Defina `GEOCNPJ_DATA_DIR` para guardar dados em outro disco. O termo técnico **competência** permanece em nomes internos de pastas e campos de API; na interface significa **mês dos dados**.
+O GeoCNPJ guarda downloads, projetos, cache e resultados na pasta `data/` do computador; os registros técnicos ficam em `logs/`. Para guardar os dados em outro disco, configure `GEOCNPJ_DATA_DIR` antes de iniciar, conforme o [manual de instalação](docs/MANUAL_INSTALACAO.md). **Não apague `data/`** ao resolver problemas de instalação: ela pode conter seus projetos e resultados.
 
-Esta distribuição de código não inclui os ZIPs CNPJ, o cache CNEFE nem resultados de usuários. O código do GeoCNPJ está sob [licença MIT](LICENSE); dados e pacotes de terceiros seguem seus próprios termos. Veja também o [repositório oficial](https://github.com/M-martins/GeoCNPJ) e as [orientações de publicação](docs/PREPARACAO_GITHUB.md).
+O repositório distribui somente o código. Os ZIPs do CNPJ, as tabelas do CNEFE e os resultados são obtidos ou criados pelo usuário no fluxo da aplicação. Fontes externas e momentos em que há acesso à internet estão descritos acima e na interface.
+
+## Licença
+
+O código do GeoCNPJ está sob [licença MIT](LICENSE). Dados públicos, mapas e pacotes de terceiros seguem os termos das respectivas fontes.
