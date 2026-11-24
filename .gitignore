@@ -1,0 +1,31 @@
+# Ambiente e caches Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Configuração e dados locais; cada usuário baixa os dados nas fontes oficiais
+.env
+.env.*
+!.env.example
+data/
+logs/
+*.sqlite3
+*.sqlite3-*
+*.db
+*.bak
+*.part
+
+# Resultados gerados (fixtures pequenas e licenciadas podem ser incluídas com !)
+*.parquet
+*.geojson
+*.csv
+*.xlsx
+*.log
+*.zip
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db

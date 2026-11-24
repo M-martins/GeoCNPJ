@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GeoCNPJ · Mapa e revisão</title>
+  <link rel="stylesheet" href="/assets/app.css"><script defer src="/assets/ui.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.css" rel="stylesheet" integrity="sha384-mnM9NG1099tBMNxdDQNDKIxYcn/fmqQXFJvbT5l1MsrWvzfxBEffceBsw75/cW2R" crossorigin="anonymous">
+  <script src="https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.js" integrity="sha384-7+0QVD3+GoeOjaW35yTmpj0FR1K45ugw4ZUY0qEFomHSmAude6e9nB6/Xy5aPnzQ" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/assets/map.css?v=20261124-2">
+  <link rel="stylesheet" href="/assets/cnae.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="side" aria-label="Filtros do mapa">
+    <a class="back back-to-stages" href="/etapas?stage=review">← Voltar às etapas do projeto</a>
+    <div class="kicker">PROJETO ATUAL</div><h1>Explorar resultados</h1>
+    <p id="projectName" class="muted">Carregando projeto…</p><p id="resultContext" class="result-context">Conferindo dados do resultado…</p>
+    <div class="filters">
+      <section class="filter-group"><h2>Estabelecimento</h2>
+        <div class="search-field"><input id="searchCnpj" autocomplete="off" placeholder="CNPJ"><div id="suggestCnpj" class="suggestions"></div></div>
+        <div class="search-field"><input id="searchName" autocomplete="off" placeholder="Nome fantasia"><div id="suggestName" class="suggestions"></div></div>
+        <input id="searchCnae" placeholder="CNAE principal">
+        <div class="search-field"><input id="searchActivity" autocomplete="off" placeholder="Atividade econômica"><div id="suggestActivity" class="suggestions"></div></div>
+      </section>
+      <section class="filter-group"><h2>Endereço</h2>
+        <div class="search-field"><input id="searchStreet" autocomplete="off" placeholder="Logradouro"><div id="suggestStreet" class="suggestions"></div></div>
+        <div class="filter-pair"><input id="searchNumber" autocomplete="off" placeholder="Número"><input id="neighborhood" placeholder="Bairro"></div>
+      </section>
+      <section class="filter-group"><h2>Qualidade e revisão</h2>
+        <div class="filter-pair"><input id="scoreMin" type="number" min="0" max="100" placeholder="Score mínimo"><input id="scoreMax" type="number" min="0" max="100" placeholder="Score máximo"></div>
+        <select id="precision"><option value="">Todas as precisões</option></select>
+        <select id="decision"><option value="">Todos os motivos</option></select>
+        <select id="reviewState"><option value="">Revisados e pendentes</option><option value="pending">Somente pendentes</option><option value="reviewed">Somente revisados</option></select>
+        <div class="quality-choice" aria-label="Mostrar por qualidade">
+          <label class="filter"><input type="checkbox" value="high" checked><span class="dot high"></span>Alta confiança</label>
+          <label class="filter"><input type="checkbox" value="alert" checked><span class="dot alert"></span>Aceito com alerta</label>
+          <label class="filter"><input type="checkbox" value="review" checked><span class="dot review"></span>Precisa de revisão</label>
+          <label class="filter"><input type="checkbox" value="unknown" checked><span class="dot unknown"></span>Não classificada</label>
+        </div>
+      </section>
+      <button id="clearFilters" class="clear-filters">Limpar filtros e mostrar tudo</button>
+    </div>
+  </aside>
+  <main id="map" aria-label="Mapa dos estabelecimentos">
+    <a class="map-return back-to-stages" href="/etapas?stage=review">← Voltar às etapas</a>
+    <button id="mapHelpToggle" class="map-help-toggle" type="button" aria-expanded="false" aria-controls="mapHelp" aria-label="Como funciona este mapa">?</button>
+    <aside id="mapHelp" class="map-help" hidden>
+      <div class="map-help-head"><strong>Como funciona o mapa</strong><button id="mapHelpClose" type="button" aria-label="Fechar ajuda">×</button></div>
+      <p>O <a href="https://github.com/ipea/geocodebr" target="_blank" rel="noopener">geocodebr do Ipea</a> compara endereços com o CNEFE do IBGE. O GeoCNPJ calcula um score e decide quais resultados precisam de revisão. <a href="/metodologia" target="_blank" rel="noopener">Veja os critérios completos e as fontes</a>.</p>
+      <p>Os círculos numerados resumem registros na escala atual. Clique para aproximar. Quando vários ocupam a mesma coordenada, clique no número para abri-los em leque.</p>
+      <p>As cores representam a decisão do GeoCNPJ: verde para aceitação automática, amarelo para aceitação com alerta, vermelho para revisão e cinza para não classificado. O score é uma regra de triagem, não uma probabilidade de acerto. Confira precisão, desvio e empate antes de usar um ponto.</p>
+    </aside>
+    <div class="map-legend" aria-label="Legenda de qualidade"><b>Qualidade dos pontos</b><span><i class="dot high"></i>Alta confiança</span><span><i class="dot alert"></i>Aceito com alerta</span><span><i class="dot review"></i>Precisa de revisão</span><span><i class="dot unknown"></i>Não classificada</span></div>
+  </main>
+  <section class="review-panel" aria-label="Resultados do projeto">
+    <div class="review-head"><div class="kicker">RESULTADOS DO PROJETO</div><h2>Registros geocodificados</h2>
+      <div id="summary" class="summary"><div class="stat"><b>—</b>Carregando</div></div>
+      <div id="resultCount" class="count"></div>
+      <div class="export-tools"><button id="selectPage">Selecionar página</button><button id="clearSelection">Limpar seleção</button><div id="selectionCount" class="selection-count">Nenhum registro selecionado.</div><button id="exportCsv">Exportar CSV</button><button id="exportGeojson" class="primary">Exportar GeoJSON</button></div>
+    </div>
+    <div id="reviewList" class="review-list"></div>
+    <div class="pager"><button id="prev">← Anterior</button><span id="pageLabel"></span><button id="next">Próxima →</button></div>
+    <section id="recordDetail" class="record-detail" hidden aria-label="Detalhes do estabelecimento">
+      <div class="record-detail-head"><b>Detalhes do estabelecimento</b><button id="closeDetail" type="button">← Voltar à lista</button></div>
+      <div id="recordDetailBody" class="record-detail-body"></div>
+    </section>
+  </section>
+</div>
+<script defer src="/assets/map.js?v=20261124-1"></script>
+</body></html>
